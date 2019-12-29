@@ -20,13 +20,13 @@ int MinRefills(vector<int> x,int N, int L) { // N is # of stops, L is maximal di
   refill_cur = 0;
   count = 0;
   bool stop_flag = false;
-  cout << "L= " << L << " N= " << N << endl;
+  //cout << "L= " << L << " N= " << N << endl;
   while (refill_cur<=N) { // stop until reach end
     refill_prev = refill_cur;
-    cout << "at while outer loop, x[refill_prev]: " << x[refill_prev] << "  x[refill_cur]: " << x[refill_cur] << " count: " << count << endl;
+    //cout << "at while outer loop, x[refill_prev]: " << x[refill_prev] << "  x[refill_cur]: " << x[refill_cur] << " count: " << count << endl;
     while ( (x[refill_cur]-x[refill_prev]) <= L ) {
       refill_cur += 1;
-      cout << "at while inner loop, x[refill_prev]: " << x[refill_prev] << "  x[refill_cur]: " << x[refill_cur] << " refill_cur:" << refill_cur << " count: " << count << endl;
+      //cout << "at while inner loop, x[refill_prev]: " << x[refill_prev] << "  x[refill_cur]: " << x[refill_cur] << " refill_cur:" << refill_cur << " count: " << count << endl;
       if (refill_cur == (N+2)) {
         stop_flag = true;
         break;
@@ -37,7 +37,7 @@ int MinRefills(vector<int> x,int N, int L) { // N is # of stops, L is maximal di
       return count;
     }
     if (refill_cur == refill_prev) { // cannot find the next stop
-      cout << "within if, x[refill_prev]: " << x[refill_prev] << " x[refill_cur]: " << x[refill_cur] << endl;
+      //cout << "within if, x[refill_prev]: " << x[refill_prev] << " x[refill_cur]: " << x[refill_cur] << endl;
       return -1;
     }
     count +=1;
