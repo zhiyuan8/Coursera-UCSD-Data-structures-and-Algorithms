@@ -1,66 +1,80 @@
+#include <algorithm>
 #include <iostream>
-using namespace std;
-// referred from
-// https://www.geeksforgeeks.org/find-height-binary-tree-represented-parent-array/
+#include <vector>
+#if defined(__unix__) || defined(__APPLE__)
+#include <sys/resource.h>
+#endif
 
-// This function fills depth of i'th element in parent[].  The depth is
-// filled in depth[i].
-void fillDepth(int parent[], int i, int depth[])
-{
-    // If depth[i] is already filled
-    if (depth[i])
-        return;
+class Node;
 
-    // If node at index i is root
-    if (parent[i] == -1)
-    {
-        depth[i] = 1;
-        return;
+class Node {
+public:
+    int key;
+    Node *parent;
+    std::vector<Node *> children;
+
+    Node() {
+      this->parent = NULL;
     }
 
-    // If depth of parent is not evaluated before, then evaluate
-    // depth of parent first
-    if (depth[parent[i]] == 0)
-        fillDepth(parent, parent[i], depth);
-
-    // Depth of this node is depth of parent plus 1
-    depth[i] = depth[parent[i]]  + 1;
-}
-
-// This function returns height of binary tree represented by
-// parent array
-int findHeight(int parent[], int n)
-{
-    // Create an array to store depth of all nodes/ and
-    // initialize depth of every node as 0 (an invalid
-    // value). Depth of root is 1
-    int depth[n];
-    for (int i = 0; i < n; i++)
-        depth[i] = 0;
-
-    // fill depth of all nodes
-    for (int i = 0; i < n; i++)
-        fillDepth(parent, i, depth);
-
-    // The height of binary tree is maximum of all depths.
-    // Find the maximum value in depth[] and assign it to ht.
-    int ht = depth[0];
-    for (int i=1; i<n; i++)
-        if (ht < depth[i])
-            ht = depth[i];
-    return ht;
-}
-
-// Driver program to test above functions
-int main()
-{   int n;
-    cin >> n;
-    int parent[n];
-    for (int i=0; i<n; i++){
-        int x;
-        cin >> x;
-        parent[i] = x;
+    void setParent(Node *theParent) {
+      parent = theParent;
+      parent->children.push_back(this);
     }
-    cout << findHeight(parent, n);
-    return 0;
+};
+
+
+int main_with_large_stack_space() {
+  std::ios_base::sync_with_stdio(0);
+  int n;
+  std::cin >> n;
+
+  std::vector<Node> nodes;
+  nodes.resize(n);
+  for (int child_index = 0; child_index < n; child_index++) {
+    int parent_index;
+    std::cin >> parent_index;
+    if (parent_index >= 0)
+      nodes[child_index].setParent(&nodes[parent_index]);
+    nodes[child_index].key = child_index;
+  }
+
+  // Replace this code with a faster implementation
+  // 1 + max( Height( tree.child ) )
+  int maxHeight = 0;
+  for (int leaf_index = 0; leaf_index < n; leaf_index++) {
+    int height = 0;
+    for (Node *v = &nodes[leaf_index]; v != NULL; v = v->parent)
+      height++;
+    maxHeight = std::max(maxHeight, height);
+  }
+
+  std::cout << maxHeight << std::endl;
+  return 0;
+}
+
+int main (int argc, char **argv)
+{
+#if defined(__unix__) || defined(__APPLE__)
+  // Allow larger stack space
+  const rlim_t kStackSize = 16 * 1024 * 1024;   // min stack size = 16 MB
+  struct rlimit rl;
+  int result;
+
+  result = getrlimit(RLIMIT_STACK, &rl);
+  if (result == 0)
+  {
+      if (rl.rlim_cur < kStackSize)
+      {
+          rl.rlim_cur = kStackSize;
+          result = setrlimit(RLIMIT_STACK, &rl);
+          if (result != 0)
+          {
+              std::cerr << "setrlimit returned result = " << result << std::endl;
+          }
+      }
+  }
+
+#endif
+  return main_with_large_stack_space();
 }
