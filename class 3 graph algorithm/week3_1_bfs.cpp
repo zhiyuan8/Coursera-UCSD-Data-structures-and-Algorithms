@@ -1,13 +1,34 @@
 #include <iostream>
 #include <vector>
-#include <queue>
+#include <queue> // need a queue
+#include <limits>
 
-using std::vector;
-using std::queue;
+using namespace std;
 
-int distance(vector<vector<int> > &adj, int s, int t) {
-  //write your code here
-  return -1;
+void distance( vector<int> &dist, vector<vector<int> > &adj, int s ) {
+  dist[s] = 0;
+
+  // step 2: create queue and enque source node
+  queue<int> bst_queue;
+  bst_queue.push(s);
+
+  // step 3: create iterator to explore neighbors of source node
+  vector<int>::iterator itr;
+
+  // step 4: explore all unvisited neighbors of node
+  while (!bst_queue.empty()){ // check if all neighbors are explored
+    // deque a node from bst_queue
+    s = bst_queue.front();
+    bst_queue.pop();
+
+    // explore the neighbors of dequed node
+    for( itr=adj[s].begin(); itr !=adj[s].end(); itr++ ){
+      if ( dist[*itr] == std::numeric_limits<int>::max() ) { // the node is not visited
+           bst_queue.push(*itr);
+           dist[*itr] = dist[s] + 1;
+      }
+    }
+  }
 }
 
 int main() {
@@ -23,5 +44,15 @@ int main() {
   int s, t;
   std::cin >> s >> t;
   s--, t--;
-  std::cout << distance(adj, s, t);
+
+  vector<int> dist(adj.size(), std::numeric_limits<int>::max()); // step 1: mark all dist to be inf
+
+  distance(dist, adj, s);
+
+  if (dist[t] == std::numeric_limits<int>::max() ){ // cannot found
+    cout << -1;
+  } else {
+    cout << dist[t];
+  }
+
 }
